@@ -6,7 +6,7 @@ install:
 	cp scripts/mac-spoofer@.service $(SERVICE_DIR)/
 
 test:
-	pytest tests/ --cov=core --cov=utils
+	PYTHONPATH=. pytest tests/ --cov=core --cov=utils
 
 lint:
 	flake8 . --count --select=E9,F63,F7,F82 --show-source --statistics

@@ -28,4 +28,4 @@ jobs:
         mypy . --ignore-missing-imports
     - name: Test with pytest
       run: |
-        pytest --cov=core --cov=utils tests/
+        PYTHONPATH=. pytest --cov=core --cov=utils tests/
