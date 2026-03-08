@@ -29,7 +29,7 @@ def get_vendor_from_mac(mac: str) -> str:
     
     oui = mac.upper()[:8].replace("-", ":")
     for vendor, prefixes in VENDOR_OUIS.items():
-        if oui in prefixes:
+        if any(oui == p.upper() for p in prefixes):
             return vendor
     return "Unknown"
 
