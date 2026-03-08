@@ -1,0 +1,11 @@
+[Unit]
+Description=MAC Address Spoofer Persistent Service
+After=network.target
+
+[Service]
+Type=oneshot
+ExecStart=/usr/bin/python3 /usr/local/bin/mac-spoofer -i %I -r
+RemainAfterExit=yes
+
+[Install]
+WantedBy=multi-user.target

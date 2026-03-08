@@ -1,0 +1,14 @@
+__pycache__/
+*.py[cod]
+*$py.class
+.env
+.venv
+env/
+venv/
+ENV/
+build/
+dist/
+*.egg-info/
+spoofer.log
+.mac_spoofer_state.json
+.mac_spoofer_disclaimer_accepted
