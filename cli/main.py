@@ -37,7 +37,7 @@ def check_disclaimer() -> None:
 
 def display_interfaces() -> None:
     """Lists all available interfaces in a clean, simple table."""
-    interfaces = list_interfaces_with_macs()
+    interfaces = list_interfaces_with_details()
     table = Table(show_header=True, header_style="bold", box=None)
     table.add_column("Interface")
     table.add_column("MAC Address")

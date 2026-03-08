@@ -1,5 +1,7 @@
 import os
 import sys
+import time
+from typing import List
 from rich.live import Live
 from rich.table import Table
 from rich.layout import Layout
