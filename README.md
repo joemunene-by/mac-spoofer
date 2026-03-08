@@ -81,6 +81,43 @@ sudo mac-spoofer -i eth0 -r --stealth --silent
 └── setup.py             # Packaging
 ```
 
+## Project Structure
+
+See [STRUCTURE.md](STRUCTURE.md) for a full file breakdown.
+
+## Ethics & Legality
+
+Please refer to [DISCLAIMER.md](DISCLAIMER.md) for full details. Use this tool only on hardware you own or have explicit permission to test.
+ok Interval Spoof: eth0 -> 00:0a:27:88:11:cc
+...
+```
+
+### Profile Management
+```text
+$ sudo mac-spoofer -i eth0 --save-profile office
+ok Profile 'office' saved: 00:0c:29:4f:89:1a
+
+$ sudo mac-spoofer -i eth0 --load-profile office
+ok Profile 'office' applied to eth0
+```
+
+### Interactive Menu
+```text
+$ sudo mac-spoofer
+MAC Address Spoofer - Menu
+
+Interface   Type       State   IP            MAC                 Vendor
+eth0        Ethernet   UP      192.168.1.5   00:07:ab:44:92:ef   Samsung
+
+1. Spoof Interface (Random)
+2. Spoof Interface (Vendor)
+3. Restore Original MAC
+4. Load Profile
+5. Quit
+
+Select an option: _
+```
+
 ## Ethics & Legality
 
 Please refer to [DISCLAIMER.md](DISCLAIMER.md) for full details. Use this tool only on hardware you own or have explicit permission to test.
