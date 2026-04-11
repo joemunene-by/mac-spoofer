@@ -1,115 +1,155 @@
 ![Python](https://img.shields.io/badge/Python-3.8%2B-blue?style=flat-square&logo=python)
 ![Platform](https://img.shields.io/badge/Platform-Linux-informational?style=flat-square&logo=linux)
 ![License](https://img.shields.io/badge/License-MIT-green?style=flat-square)
-![CI](https://github.com/joemunene-by/mac-spoofer/actions/workflows/ci.yml/badge.svg)
-![Stars](https://img.shields.io/github/stars/joemunene-by/mac-spoofer?style=flat-square)
-![Issues](https://img.shields.io/github/issues/joemunene-by/mac-spoofer?style=flat-square)
 
-# MAC Address Spoofer CLI
+# MAC Address Spoofer
 
-A professional, production-ready CLI tool for spoofing MAC addresses on Linux network interfaces.
+A clean, Linux-focused CLI tool for viewing, spoofing, and restoring MAC
+addresses on network interfaces. Supports random generation, vendor-specific
+OUI spoofing (Apple, Samsung, Intel, and more), and interface management
+through standard `ip link` commands.
 
-## Advanced Features
+## Features
 
-- **Vendor Intelligence**: Spoof MACs from Apple, Samsung, Google, Intel, and more.
-- **Persistence**: Auto-spoof on boot via systemd service.
-- **Profiles**: Save and load custom MAC profiles.
-- **Interval Mode**: Rotate MAC addresses automatically every N minutes.
-- **Interactive TUI**: A guided terminal interface for ease of use.
-- **Stealth Mode**: Clear shell history after execution.
+- Show the current MAC address for any interface
+- Generate a fully random, locally-administered MAC address
+- Set an explicit MAC address of your choosing
+- Spoof with a real vendor OUI for realistic device impersonation
+- Restore the original MAC address saved before the first change
+- List all network interfaces with MAC, state, and vendor info
+- Validate MAC address format before applying
+- Coloured terminal output (optional, via colorama)
+- Graceful error handling when not running as root
+
+## Supported Vendors
+
+The following vendors are available for OUI-based spoofing (18 vendors,
+100+ OUI prefixes):
+
+| Vendor     | OUIs | Vendor     | OUIs |
+|------------|------|------------|------|
+| Apple      | 11   | Samsung    | 11   |
+| Intel      | 19   | Cisco      | 12   |
+| Dell       | 12   | Google     | 7    |
+| Microsoft  | 10   | Huawei     | 11   |
+| TP-Link    | 11   | Netgear    | 11   |
+| Sony       | 11   | LG         | 11   |
+| Xiaomi     | 11   | ASUS       | 11   |
+| Lenovo     | 11   | HP         | 11   |
+| Motorola   | 11   | NVIDIA     | 5    |
 
 ## Installation
 
-### pipx (Recommended)
-```bash
-pipx install git+https://github.com/joemunene-by/mac-spoofer.git
-```
-
-### From Source
 ```bash
 git clone https://github.com/joemunene-by/mac-spoofer.git
 cd mac-spoofer
-make install
+pip install -r requirements.txt
 ```
 
-## Advanced Usage
+colorama is the only external dependency and is optional -- the tool works
+without it (you just lose coloured output).
 
-### Interval Rotation
+## Usage
+
+All commands that modify a MAC address require **root / sudo**.
+
+### List all interfaces
+
 ```bash
-sudo mac-spoofer -i eth0 --interval 30 --vendor Apple
+python3 spoofer.py --list
 ```
 
-### Save/Load Profiles
+```
+Interface        MAC Address          State      Vendor
+-----------------------------------------------------------------
+eth0             08:00:27:a3:b4:c5    UP         
+lo               00:00:00:00:00:00    UNKNOWN    
+wlan0            00:15:af:33:21:bb    DOWN       Intel
+```
+
+### Show current MAC for an interface
+
 ```bash
-sudo mac-spoofer -i eth0 --save-profile home
-sudo mac-spoofer -i eth0 --load-profile home
+python3 spoofer.py --interface eth0 --show
 ```
 
-### Systemd Persistence
+### Spoof with a random MAC
+
 ```bash
-sudo systemctl enable mac-spoofer@eth0
-sudo systemctl start mac-spoofer@eth0
+sudo python3 spoofer.py --interface eth0 --random
 ```
 
-### Stealth Mode
+### Spoof with a vendor OUI
+
 ```bash
-sudo mac-spoofer -i eth0 -r --stealth --silent
+sudo python3 spoofer.py --interface wlan0 --vendor apple
 ```
 
-## Demo
+### Set a specific MAC address
 
-### List Interfaces
-```text
-$ sudo mac-spoofer --list
-Interface   Type       State   IP            MAC                 Vendor
-eth0        Ethernet   UP      192.168.1.5   00:0c:29:4f:89:1a   VMware
-wlan0       WiFi       DOWN    None          00:15:af:33:21:bb   Intel
+```bash
+sudo python3 spoofer.py --interface eth0 --mac AA:BB:CC:DD:EE:FF
 ```
 
-### Spoof as Samsung Device
-```text
-$ sudo mac-spoofer -i eth0 --vendor Samsung
-ok MAC for eth0 changed to 00:07:ab:44:92:ef (Samsung)
+### Restore the original MAC
+
+```bash
+sudo python3 spoofer.py --interface eth0 --restore
 ```
 
-### Interval Rotation (Daemon)
-```text
-$ sudo mac-spoofer -i eth0 --interval 15 --vendor Apple
-info Starting interval mode for eth0 (every 15 minutes)
-ok Interval Spoof: eth0 -> 00:0a:27:88:11:cc
-...
+### List available vendors
+
+```bash
+python3 spoofer.py --vendors
 ```
 
-### Profile Management
-```text
-$ sudo mac-spoofer -i eth0 --save-profile office
-ok Profile 'office' saved: 00:0c:29:4f:89:1a
+## Short Flags
 
-$ sudo mac-spoofer -i eth0 --load-profile office
-ok Profile 'office' applied to eth0
-```
+| Long           | Short | Description                          |
+|----------------|-------|--------------------------------------|
+| `--interface`  | `-i`  | Target network interface             |
+| `--random`     | `-r`  | Random locally-administered MAC      |
+| `--mac`        | `-m`  | Explicit MAC address                 |
+| `--vendor`     | `-v`  | Vendor name for OUI spoofing         |
+| `--list`       | `-l`  | List all interfaces                  |
+| `--show`       | `-s`  | Show MAC for the given interface     |
+| `--restore`    |       | Restore original MAC                 |
+| `--vendors`    |       | Print supported vendor names         |
 
-### Interactive Menu
-```text
-$ sudo mac-spoofer
-MAC Address Spoofer - Menu
+## How It Works
 
-Interface   Type       State   IP            MAC                 Vendor
-eth0        Ethernet   UP      192.168.1.5   00:07:ab:44:92:ef   Samsung
-
-1. Spoof Interface (Random)
-2. Spoof Interface (Vendor)
-3. Restore Original MAC
-4. Load Profile
-5. Quit
-
-Select an option: _
-```
+1. The current MAC is read from `/sys/class/net/<iface>/address`.
+2. Before the first change the original MAC is saved to a temp file so it
+   can be restored later (even across separate invocations).
+3. The interface is brought down with `ip link set dev <iface> down`.
+4. The new MAC is applied with `ip link set dev <iface> address <mac>`.
+5. The interface is brought back up.
+6. The new address is verified by re-reading from `/sys`.
 
 ## Project Structure
 
-See [STRUCTURE.md](STRUCTURE.md) for a full file breakdown.
+```
+mac-spoofer/
+  spoofer.py        Main CLI entry point
+  vendors.py        OUI-to-vendor mapping (18 vendors, 100+ prefixes)
+  requirements.txt  Python dependencies (colorama)
+  README.md         This file
+  LICENSE           MIT license
+```
 
-## Ethics & Legality
+## Disclaimer
 
-Please refer to [DISCLAIMER.md](DISCLAIMER.md) for full details. Use this tool only on hardware you own or have explicit permission to test.
+This tool is provided for **educational and authorized testing purposes only**.
+
+- Only use this tool on networks and hardware you own or have explicit
+  written permission to test.
+- Unauthorized MAC address spoofing may violate local, state, or federal
+  laws, as well as your network provider's terms of service.
+- The authors assume no liability for misuse of this software.
+
+Use responsibly.
+
+## License
+
+This project is licensed under the MIT License. See [LICENSE](LICENSE) for
+details.
